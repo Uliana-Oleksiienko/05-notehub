@@ -1,7 +1,5 @@
 import axios from "axios";
 import type { Note } from "../types/note";
-import toast from "react-hot-toast";
-import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 const myKey = import.meta.env.VITE_NOTEHUB_TOKEN;
 
@@ -39,7 +37,7 @@ export const fetchNotes = async (
 
 export const createNote = async (noteData: {
   title: string;
-  content: string;
+  content: string | null;
   tag: string;
 }): Promise<Note> => {
   try {
@@ -50,10 +48,8 @@ export const createNote = async (noteData: {
         "Content-Type": "application/json",
       },
     });
-    toast.success("Note added successfully!");
     return response.data;
   } catch (error) {
-    toast.error("Error creating note");
     console.error("Error creating note", error);
     throw error;
   }
@@ -68,21 +64,9 @@ export const deleteNote = async (id: string): Promise<Note> => {
       },
     });
 
-    toast.success("Note deleted successfully!");
     return response.data;
   } catch (error) {
-    toast.error("Error deleting note");
     console.error("Error deleting note", error);
     throw error;
   }
-};
-
-export const useFetchNotes = (currentPage: number, search: string) => {
-  return useQuery({
-    queryKey: ["notes", currentPage, search],
-    queryFn: () => fetchNotes(currentPage, search),
-    placeholderData: keepPreviousData,
-    staleTime: 1000 * 30,
-    enabled: true,
-  });
 };
