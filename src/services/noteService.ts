@@ -1,10 +1,13 @@
-
 import axios from "axios";
 import type { Note } from "../types/note";
 import toast from "react-hot-toast";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 const myKey = import.meta.env.VITE_NOTEHUB_TOKEN;
+
+if (!myKey) {
+  console.error('❌ VITE_NOTEHUB_TOKEN is not defined in .env file');
+}
 
 type NoteHttpProps = {
   notes: Note[];
@@ -18,16 +21,15 @@ const fetchNotes = async (
   search: string
 ): Promise<NoteHttpProps> => {
   const options = {
-    params: { page, perPage: 12, search },
-    method: "GET",
+    params: { page, perPage: 12, search: search || undefined },
     headers: {
-      accept: "applications/json",
+      accept: "application/json",
       Authorization: `Bearer ${myKey}`,
     },
   };
 
   try {
-    const response = await axios.get<NoteHttpProps>("notes", options);
+    const response = await axios.get<NoteHttpProps>("/notes", options);
     return response.data;
   } catch (error) {
     console.error("Error fetching notes", error);
@@ -41,7 +43,7 @@ export const createNote = async (noteData: {
   tag: string;
 }): Promise<Note> => {
   try {
-    const response = await axios.post<Note>("notes", noteData, {
+    const response = await axios.post<Note>("/notes", noteData, {
       headers: {
         accept: "application/json",
         Authorization: `Bearer ${myKey}`,
@@ -51,7 +53,8 @@ export const createNote = async (noteData: {
     toast.success("Note added successfully!");
     return response.data;
   } catch (error) {
-    toast.error("Error getching notes");
+    toast.error("Error creating note");
+    console.error("Error creating note", error);
     throw error;
   }
 };
@@ -69,6 +72,7 @@ export const deleteNote = async (id: string): Promise<Note> => {
     return response.data;
   } catch (error) {
     toast.error("Error deleting note");
+    console.error("Error deleting note", error);
     throw error;
   }
 };
@@ -79,5 +83,6 @@ export const useFetchNotes = (currentPage: number, search: string) => {
     queryFn: () => fetchNotes(currentPage, search),
     placeholderData: keepPreviousData,
     staleTime: 1000 * 30,
+    enabled: true,
   });
 };
