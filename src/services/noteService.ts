@@ -16,7 +16,7 @@ type NoteHttpProps = {
 
 axios.defaults.baseURL = "https://notehub-public.goit.study/api/";
 
-const fetchNotes = async (
+export const fetchNotes = async (
   page: number,
   search: string
 ): Promise<NoteHttpProps> => {
