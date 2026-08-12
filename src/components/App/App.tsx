@@ -3,7 +3,7 @@ import css from "./App.module.css";
 import NoteList from "../NoteList/NoteList";
 import SearchBox from "../SearchBox/SearchBox";
 import Modal from "../Modal/Modal";
-import { useFetchNotes } from "../../services/noteService";
+import { useFetchNotes } from "../../hooks/useNotes"; // ← з hooks!
 import toast, { Toaster } from "react-hot-toast";
 import { useDebounce } from "use-debounce";
 import Loader from "../Loader/Loader";
